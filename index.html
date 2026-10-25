@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b1020">
+<title>Nova AI Video Studio</title>
+
+<style>
+:root {
+  --bg: #0b1020;
+  --panel: #121b2e;
+  --panel2: #19253b;
+  --border: #293953;
+  --text: #f1f5fc;
+  --muted: #99a9c1;
+  --blue: #92caff;
+  --blue2: #668cff;
+  --green: #8ee5c1;
+  --radius: 18px;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+}
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+header {
+  padding: 17px 18px;
+  background: #10192b;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.header-inner {
+  max-width: 850px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.brand { display: flex; align-items: center; gap: 11px; }
+.logo {
+  width: 43px; height: 43px;
+  border-radius: 14px;
+  display: grid; place-items: center;
+  color: #0a1730;
+  background: linear-gradient(140deg, #b1e1ff, #7698ff);
+  font-size: 25px; font-weight: 900;
+}
+h1 { margin: 0; font-size: 18px; letter-spacing: -.5px; }
+.subtitle { color: var(--muted); font-size: 11px; margin-top: 3px; }
+.badge {
+  border: 1px solid #31533f;
+  background: #152a28;
+  color: var(--green);
+  padding: 7px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+main { max-width: 850px; margin: auto; padding: 20px 15px 40px; }
+.hero {
+  padding: 25px 21px;
+  border-radius: 22px;
+  background: linear-gradient(125deg, #1a3154, #17213a 72%);
+  border: 1px solid #30486b;
+  margin-bottom: 22px;
+  position: relative;
+  overflow: hidden;
+}
+.hero:after {
+  content: "✦";
+  position: absolute;
+  right: 24px;
+  top: 10px;
+  font-size: 82px;
+  color: #b6d8ff;
+  opacity: .12;
+}
+.eyebrow {
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+.hero h2 { font-size: 29px; line-height: 1.2; margin: 12px 0 9px; }
+.hero p { color: #bdcce1; max-width: 470px; line-height: 1.65; margin: 0; }
+.section-title { font-size: 15px; margin: 23px 0 11px; }
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 17px;
+  margin-bottom: 14px;
+}
+label { display: block; font-weight: 700; font-size: 12px; margin-bottom: 9px; }
+textarea, input[type="text"], select {
+  display: block;
+  width: 100%;
+  background: #0b1323;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 12px;
+  outline: none;
+}
+textarea { resize: vertical; min-height: 115px; line-height: 1.6; }
+textarea:focus, select:focus, input:focus { border-color: var(--blue); }
+.muted { color: var(--muted); font-size: 11px; line-height: 1.6; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.tab {
+  padding: 12px 8px;
+  background: #0c1526;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.tab.active { background: #203957; color: white; border-color: #83bfff; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  border: 1px solid var(--border);
+  background: #0c1526;
+  color: #b9c8df;
+  padding: 9px 12px;
+  border-radius: 24px;
+  font-size: 12px;
+}
+.chip.active { background: #244568; border-color: #85bdff; color: white; }
+.upload {
+  border: 1px dashed #526b8c;
+  background: #0c1526;
+  border-radius: 13px;
+  padding: 17px;
+  text-align: center;
+}
+input[type="file"] { display: block; width: 100%; margin-top: 13px; font-size: 12px; }
+#imagePreview {
+  display: none;
+  max-width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  margin: 13px auto 0;
+  border-radius: 12px;
+}
+.primary {
+  width: 100%;
+  border: 0;
+  border-radius: 13px;
+  padding: 15px;
+  color: #09152a;
+  background: linear-gradient(110deg, #a4dcff, #93aaff);
+  font-weight: 850;
+  margin-top: 14px;
+}
+.secondary {
+  padding: 10px 13px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  background: var(--panel2);
+}
+.full { width: 100%; margin-top: 10px; }
+.status { margin-top: 12px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.notice {
+  border: 1px solid #374b6b;
+  background: #152138;
+  padding: 14px;
+  border-radius: 13px;
+  margin-top: 15px;
+  color: #c9d9f0;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.notice strong { color: var(--blue); }
+#videoPreview {
+  display: none;
+  width: 100%;
+  max-height: 440px;
+  background: #05080e;
+  border-radius: 13px;
+  margin-top: 12px;
+}
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border);
+}
+.history-item:last-child { border-bottom: 0; }
+.history-item strong { font-size: 12px; }
+.history-item small { display: block; color: var(--muted); margin-top: 4px; }
+footer { text-align: center; color: #72819a; font-size: 11px; padding: 15px; }
+.hidden { display: none !important; }
+@media (max-width: 480px) {
+  .hero h2 { font-size: 25px; }
+  .row { gap: 9px; }
+  .card { padding: 14px; }
+  h1 { font-size: 16px; }
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="logo">N</div>
+      <div>
+        <h1>Nova AI Video Studio</h1>
+        <div class="subtitle">Your imagination, in motion.</div>
+      </div>
+    </div>
+    <span class="badge">FREE-FIRST</span>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="eyebrow">AI VIDEO CREATION STUDIO</div>
+    <h2>Bring your imagination<br>to life.</h2>
+    <p>Create a video concept, prepare generation settings, and organize your creations in one place.</p>
+  </section>
+
+  <h3 class="section-title">01 / Choose creation mode</h3>
+  <section class="card">
+    <div class="tabs">
+      <button class="tab active" data-mode="text">✦ Text to Video</button>
+      <button class="tab" data-mode="image">▧ Image to Video</button>
+    </div>
+    <p class="muted" id="modeDescription">Describe a scene you want an AI video model to generate.</p>
+  </section>
+
+  <h3 class="section-title">02 / Your creative prompt</h3>
+  <section class="card">
+    <label for="prompt">Describe your video</label>
+    <textarea id="prompt" maxlength="3000"
+      placeholder="A lonely man walking through a rainy Chennai street at night, 1990s Tamil cinema atmosphere, vintage film grain, cinematic camera movement..."></textarea>
+    <p class="muted"><span id="charCount">0</span>/3000 characters</p>
+    <button class="secondary" id="exampleButton">✦ Use example prompt</button>
+    <div id="imageArea" class="hidden" style="margin-top:15px">
+      <label for="imageInput">Choose a reference image</label>
+      <div class="upload">
+        Select a photo from your device
+        <input type="file" id="imageInput" accept="image/png,image/jpeg,image/webp">
+        <img id="imagePreview" alt="Selected reference image">
+      </div>
+      <button class="secondary full" id="removeImage">Remove image</button>
+      <p class="muted">Your image is previewed locally. It is not sent to an AI service by this demo.</p>
+    </div>
+  </section>
+
+  <h3 class="section-title">03 / Select your visual style</h3>
+  <section class="card">
+    <div class="chips" id="styles">
+      <button class="chip active">Cinematic</button>
+      <button class="chip">Photorealistic</button>
+      <button class="chip">Retro 90s</button>
+      <button class="chip">Anime</button>
+      <button class="chip">Fantasy</button>
+      <button class="chip">Sci-Fi</button>
+      <button class="chip">Nature</button>
+      <button class="chip">Dreamy</button>
+      <button class="chip">Vintage Film</button>
+    </div>
+  </section>
+
+  <h3 class="section-title">04 / Generation settings</h3>
+  <section class="card">
+    <div class="row">
+      <div>
+        <label for="duration">Target duration</label>
+        <select id="duration">
+          <option value="5">5 seconds</option>
+          <option value="10">10 seconds</option>
+          <option value="15">15 seconds</option>
+          <option value="20">20 seconds</option>
+          <option value="30" selected>30 seconds</option>
+          <option value="60">60 seconds</option>
+        </select>
+      </div>
+      <div>
+        <label for="ratio">Aspect ratio</label>
+        <select id="ratio">
+          <option value="9:16">9:16 · Vertical</option>
+          <option value="16:9">16:9 · Landscape</option>
+          <option value="1:1">1:1 · Square</option>
+        </select>
+      </div>
+      <div>
+        <label for="quality">Quality preference</label>
+        <select id="quality">
+          <option value="Standard">Standard</option>
+          <option value="High">High</option>
+        </select>
+      </div>
+      <div>
+        <label for="generationMode">Video workflow</label>
+        <select id="generationMode">
+          <option value="single">Single generation</option>
+          <option value="multi">Multi-clip story</option>
+        </select>
+      </div>
+    </div>
+    <p class="muted">Duration, quality, and aspect ratio are requests. Actual output depends on the connected model.</p>
+  </section>
+
+  <h3 class="section-title">05 / Prepare your video</h3>
+  <section class="card">
+    <button class="primary" id="generateButton">✦ Prepare video request</button>
+    <div class="status" id="status" aria-live="polite">Ready. Describe your idea to begin.</div>
+    <div class="notice">
+      <strong>Generation engine not connected</strong><br>
+      This version prepares your video request. It does not generate an AI video yet. We must connect a compatible video-generation API or inference service to produce real video files.
+    </div>
+  </section>
+
+  <h3 class="section-title">06 / Your prepared request</h3>
+  <section class="card">
+    <label for="output">Video generation prompt</label>
+    <textarea id="output" readonly placeholder="Your prepared request will appear here." style="min-height:180px"></textarea>
+    <button class="secondary full" id="copyButton">Copy prompt</button>
+    <button class="secondary full" id="downloadPrompt">Download prompt as TXT</button>
+  </section>
+
+  <h3 class="section-title">07 / Video preview</h3>
+  <section class="card">
+    <p class="muted">Once an actual video is generated, you can preview it here.</p>
+    <input type="file" id="videoInput" accept="video/*">
+    <video id="videoPreview" controls playsinline></video>
+    <button class="secondary full" id="downloadVideo">Download previewed video</button>
+    <p class="muted">This preview feature lets you load a video already saved on your device. It does not generate one.</p>
+  </section>
+
+  <h3 class="section-title">08 / Recent requests</h3>
+  <section class="card">
+    <div id="history">
+      <p class="muted">Your prepared requests will appear here.</p>
+    </div>
+    <button class="secondary full" id="clearHistory">Clear request history</button>
+  </section>
+</main>
+
+<footer>Nova AI Video Studio · Creative tools for everyone</footer>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+
+  let mode = "text";
+  let style = "Cinematic";
+  let imageUrl = "";
+  let videoUrl = "";
+  let history = [];
+
+  const example =
+    "A lonely man walking through a rainy Chennai street at night, " +
+    "1990s Tamil cinema atmosphere, wet road reflections, soft blue " +
+    "street lights, vintage film grain, emotional storytelling, " +
+    "slow cinematic camera movement.";
+
+  $("prompt").addEventListener("input", () => {
+    $("charCount").textContent = $("prompt").value.length;
+  });
+
+  document.querySelectorAll(".tab").forEach(button => {
+    button.addEventListener("click", () => {
+      mode = button.dataset.mode;
+
+      document.querySelectorAll(".tab").forEach(tab =>
+        tab.classList.toggle("active", tab === button)
+      );
+
+      $("imageArea").classList.toggle("hidden", mode !== "image");
+
+      $("modeDescription").textContent = mode === "image"
+        ? "Select a reference image and describe how you want it animated."
+        : "Describe a scene you want an AI video model to generate.";
+    });
+  });
+
+  document.querySelectorAll(".chip").forEach(button => {
+    button.addEventListener("click", () => {
+      document.querySelectorAll(".chip").forEach(chip =>
+        chip.classList.toggle("active", chip === button)
+      );
+      style = button.textContent;
+    });
+  });
+
+  $("exampleButton").addEventListener("click", () => {
+    $("prompt").value = example;
+    $("charCount").textContent = example.length;
+  });
+
+  $("imageInput").addEventListener("change", event => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      $("status").textContent = "Please choose a valid image.";
+      return;
+    }
+
+    if (imageUrl) URL.revokeObjectURL(imageUrl);
+    imageUrl = URL.createObjectURL(file);
+    $("imagePreview").src = imageUrl;
+    $("imagePreview").style.display = "block";
+    $("status").textContent = "Image selected locally.";
+  });
+
+  $("removeImage").addEventListener("click", () => {
+    if (imageUrl) URL.revokeObjectURL(imageUrl);
+    imageUrl = "";
+    $("imageInput").value = "";
+    $("imagePreview").removeAttribute("src");
+    $("imagePreview").style.display = "none";
+    $("status").textContent = "Image removed.";
+  });
+
+  $("generateButton").addEventListener("click", () => {
+    const prompt = $("prompt").value.trim();
+
+    if (!prompt) {
+      $("status").textContent = "Please enter a description first.";
+      $("prompt").focus();
+      return;
+    }
+
+    if (mode === "image" && !imageUrl) {
+      $("status").textContent = "Please select a reference image.";
+      return;
+    }
+
+    const duration = Number($("duration").value);
+    const workflow = $("generationMode").value;
+    const ratio = $("ratio").value;
+    const quality = $("quality").value;
+
+    const request = [
+      "NOVA AI VIDEO STUDIO — GENERATION REQUEST",
+      "",
+      "Mode: " + (mode === "image" ? "Image to Video" : "Text to Video"),
+      "Prompt: " + prompt,
+      "Visual style: " + style,
+      "Target duration: " + duration + " seconds",
+      "Aspect ratio: " + ratio,
+      "Quality preference: " + quality,
+      "Workflow: " + (workflow === "single"
+        ? "Single generation"
+        : "Multi-clip story"),
+      "Reference image selected: " + (imageUrl ? "Yes" : "No"),
+      "",
+      "IMPORTANT:",
+      "This is a prepared request, not a generated video.",
+      "The selected provider must support the requested duration,",
+      "aspect ratio, quality, and generation mode.",
+      "No AI API has been called by this page."
+    ].join("\n");
+
+    $("output").value = request;
+    $("status").textContent =
+      "Request prepared. Connect an AI generation service to create a video.";
+
+    history.unshift({
+      title: prompt.slice(0, 65) + (prompt.length > 65 ? "…" : ""),
+      date: new Date().toLocaleString(),
+      request
+    });
+
+    history = history.slice(0, 10);
+    renderHistory();
+    $("output").scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+
+  $("copyButton").addEventListener("click", async () => {
+    const value = $("output").value;
+    if (!value) {
+      $("status").textContent = "Prepare a request first.";
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(value);
+      $("status").textContent = "Prompt copied.";
+    } catch {
+      $("output").focus();
+      $("output").select();
+      $("status").textContent = "Select the text and use Copy.";
+    }
+  });
+
+  $("downloadPrompt").addEventListener("click", () => {
+    const value = $("output").value;
+    if (!value) {
+      $("status").textContent = "Prepare a request first.";
+      return;
+    }
+    const blob = new Blob([value], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "nova-video-prompt.txt";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+
+  $("videoInput").addEventListener("change", event => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("video/")) {
+      $("status").textContent = "Please choose a valid video.";
+      return;
+    }
+
+    if (videoUrl) URL.revokeObjectURL(videoUrl);
+    videoUrl = URL.createObjectURL(file);
+    $("videoPreview").src = videoUrl;
+    $("videoPreview").style.display = "block";
+    $("status").textContent = "Local video loaded for preview.";
+  });
+
+  $("downloadVideo").addEventListener("click", () => {
+    if (!videoUrl) {
+      $("status").textContent = "Load a video to preview first.";
+      return;
+    }
+
+    const a = document.createElement("a");
+    a.href = videoUrl;
+    a.download = "nova-video.mp4";
+    a.click();
+  });
+
+  function renderHistory() {
+    const root = $("history");
+    root.replaceChildren();
+
+    if (!history.length) {
+      const p = document.createElement("p");
+      p.className = "muted";
+      p.textContent = "Your prepared requests will appear here.";
+      root.appendChild(p);
+      return;
+    }
+
+    history.forEach((item, index) => {
+      const row = document.createElement("div");
+      row.className = "history-item";
+
+      const info = document.createElement("div");
+      const title = document.createElement("strong");
+      title.textContent = item.title;
+
+      const date = document.createElement("small");
+      date.textContent = item.date;
+
+      info.append(title, date);
+
+      const button = document.createElement("button");
+      button.className = "secondary";
+      button.textContent = "Open";
+      button.addEventListener("click", () => {
+        $("output").value = item.request;
+        $("status").textContent = "Saved request loaded.";
+        $("output").scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+
+      row.append(info, button);
+      root.appendChild(row);
+    });
+  }
+
+  $("clearHistory").addEventListener("click", () => {
+    history = [];
+    renderHistory();
+    $("status").textContent = "Request history cleared.";
+  });
+})();
+</script>
+</body>
+</html>
